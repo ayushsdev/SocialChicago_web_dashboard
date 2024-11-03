@@ -1,13 +1,18 @@
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    // Properly await the params
     const { id } = params;
     
     // Create reference to the PDF in Firebase Storage
@@ -23,7 +28,6 @@ export async function GET(
     return new NextResponse(pdfArrayBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        // Add cache control if needed
         'Cache-Control': 'public, max-age=3600',
       },
     });
