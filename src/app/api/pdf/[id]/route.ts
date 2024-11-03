@@ -1,13 +1,14 @@
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
+  context: { params: { id: string } }
+) {
   try {
-    const { id } = params;
+    const { id } = context.params;
     
     // Create reference to the PDF in Firebase Storage
     const pdfRef = ref(storage, `happyHourMenu/${id}.pdf`);
@@ -18,8 +19,8 @@ export async function GET(
     // Fetch the PDF content
     const response = await fetch(url);
     const pdfArrayBuffer = await response.arrayBuffer();
-
-    return new NextResponse(pdfArrayBuffer, {
+    
+    return new Response(pdfArrayBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Cache-Control': 'public, max-age=3600',
@@ -27,6 +28,6 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching PDF:', error);
-    return new NextResponse('PDF not found', { status: 404 });
+    return new Response('PDF not found', { status: 404 });
   }
 }
