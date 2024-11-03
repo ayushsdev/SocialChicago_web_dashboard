@@ -2,16 +2,22 @@ import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { NextRequest } from 'next/server';
 
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
 export async function GET(
   request: NextRequest,
-  context: { params: Record<string, string | string[]> }
+  props: PageProps
 ) {
   try {
-    const id = context.params.id as string;
+    // const id = context.params.id as string;
     
     // Create reference to the PDF in Firebase Storage
-    const pdfRef = ref(storage, `happyHourMenu/${id}.pdf`);
+    const pdfRef = ref(storage, `happyHourMenu/${props.params.id}.pdf`);
     
     // Get the download URL
     const url = await getDownloadURL(pdfRef);
