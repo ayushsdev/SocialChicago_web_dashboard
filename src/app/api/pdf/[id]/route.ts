@@ -2,15 +2,9 @@ import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { NextRequest, NextResponse } from 'next/server';
 
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const { id } = params;
