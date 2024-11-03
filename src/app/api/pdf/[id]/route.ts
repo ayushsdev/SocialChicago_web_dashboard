@@ -5,10 +5,10 @@ import { NextRequest } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string | string[]> }
 ) {
   try {
-    const { id } = context.params;
+    const id = context.params.id as string;
     
     // Create reference to the PDF in Firebase Storage
     const pdfRef = ref(storage, `happyHourMenu/${id}.pdf`);
