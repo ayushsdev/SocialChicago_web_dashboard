@@ -4,7 +4,6 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 // import firebase from 'firebase/app';
 import 'firebase/firestore';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Bar } from '@/lib/bar';
 
@@ -62,13 +61,14 @@ export default function Dashboard({ user, signOut }: DashboardProps) {
             {bars.map((bar) => (
               <div key={bar.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                 <Link href={`/bars/${bar.id}`} className="block">
-                  <Image 
+                  <img 
                     src={bar.heroImageURL} 
                     alt={bar.name}
-                    width={400}
-                    height={192}
                     className="w-full h-48 object-cover"
-                    onError={() => console.error('Image failed to load:', bar.heroImageURL)}
+                    onError={(e) => {
+                      console.error('Image failed to load:', bar.heroImageURL);
+                      e.currentTarget.src = '/fallback-image.jpg';
+                    }}
                   />
                 </Link>
                 <div className="p-6">
