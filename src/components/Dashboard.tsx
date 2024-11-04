@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import 'firebase/firestore';
 import Link from 'next/link';
 import { Bar } from '@/lib/bar';
+import Image from 'next/image';
 
 interface DashboardProps {
   user: User;
@@ -60,15 +61,14 @@ export default function Dashboard({ user, signOut }: DashboardProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {bars.map((bar) => (
               <div key={bar.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                <Link href={`/bars/${bar.id}`} className="block">
-                  <img 
+                 <Link href={`/bars/${bar.id}`} className="block">
+                 <Image 
                     src={bar.heroImageURL} 
                     alt={bar.name}
+                    width={400}
+                    height={192}
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      console.error('Image failed to load:', bar.heroImageURL);
-                      e.currentTarget.src = '/fallback-image.jpg';
-                    }}
+                    onError={() => console.error('Image failed to load:', bar.heroImageURL)}
                   />
                 </Link>
                 <div className="p-6">
