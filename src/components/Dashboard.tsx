@@ -68,6 +68,7 @@ export default function Dashboard({ user, signOut }: DashboardProps) {
                     width={400}
                     height={192}
                     className="w-full h-48 object-cover"
+                    onError={() => console.error('Image failed to load:', bar.heroImageURL)}
                   />
                 </Link>
                 <div className="p-6">

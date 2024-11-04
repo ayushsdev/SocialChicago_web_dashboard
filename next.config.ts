@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
         port: '',
-        pathname: '/v0/b/socialchicago-bf1a5.appspot.com/**',
+        pathname: '/v0/b/**',
       },
     ],
   }
