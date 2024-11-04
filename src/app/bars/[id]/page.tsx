@@ -97,11 +97,22 @@ export default function BarPage({ params }: PageProps) {
     formData.append('file', file);
 
     try {
+      // Check if the API URL is defined
+      const apiUrl = process.env.NEXT_PUBLIC_AI_API_URL;
+      if (!apiUrl) {
+        throw new Error('AI API URL is not configured');
+      }
+
       // First analyze the PDF
-      const response = await fetch('http://127.0.0.1:5000/upload', {
+      const response = await fetch(`${apiUrl}/upload`, {
         method: 'POST',
         body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data: APIResponse = await response.json();
       const parsedAnalysis = JSON.parse(data.analysis as unknown as string);
       console.log(parsedAnalysis);
