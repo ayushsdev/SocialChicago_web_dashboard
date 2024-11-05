@@ -1,34 +1,39 @@
 import Image from 'next/image';
 import { Bar } from '@/lib/bar';
 import { Camera } from 'lucide-react';
+import { ChangeEvent } from 'react';
 
 interface HeroSectionProps {
   bar: Bar;
   editedBar: Bar | null;
   isEditing: boolean;
   setEditedBar: (bar: Bar | null) => void;
+  onImageSelect: (file: File) => void;
 }
 
-export function HeroSection({ bar, editedBar, isEditing, setEditedBar }: HeroSectionProps) {
+export function HeroSection({ bar, editedBar, isEditing, setEditedBar, onImageSelect }: HeroSectionProps) {
   const displayBar = isEditing ? editedBar || bar : bar;
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const heroImageURL = URL.createObjectURL(file);
     setEditedBar({ ...editedBar || bar, heroImageURL });
+    onImageSelect(file);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedBar({ ...editedBar || bar, name: e.target.value });
   };
 
+  const imageUrl = displayBar?.heroImageURL || null;
+
   return (
     <div className="relative h-[60vh] min-h-[400px]">
       <div className="absolute inset-0">
-        {displayBar.heroImageURL ? (
+        {imageUrl ? (
           <Image
-            src={displayBar.heroImageURL}
+            src={imageUrl}
             alt={displayBar.name}
             fill
             className="object-cover"

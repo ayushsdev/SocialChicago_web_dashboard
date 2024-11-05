@@ -16,7 +16,7 @@ import { Timestamp } from 'firebase/firestore';
 import { WeekDay } from '@/lib/bar';
 import { PDFViewer } from '@/components/PDFViewer';
 import { v4 as uuidv4 } from 'uuid';
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 
 interface PageProps {
@@ -33,6 +33,7 @@ export default function BarPage({ params }: PageProps) {
   const [uploadedHappyHours, setUploadedHappyHours] = useState<HappyHourSession[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedHeroImage, setSelectedHeroImage] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchBar = async () => {
@@ -41,10 +42,20 @@ export default function BarPage({ params }: PageProps) {
       const barData = barDoc.data() as Bar;
       const sanitizedBarData = {
         ...barData,
-        happyHours: barData.happyHours.map(hh => ({
+        happyHours: barData?.happyHours ? barData.happyHours.map(hh => ({
           ...hh,
           day: hh.day || []
-        }))
+        })) : [],
+        heroImageURL: barData?.heroImageURL || null,
+        name: barData?.name || '',
+        address: {
+          fullAddress: barData?.fullAddress || '',
+          neighborhood: barData?.address?.neighborhood || '',
+          city: barData?.address?.city || '',
+          state: barData?.address?.state || '',
+        },
+        phoneNumber: barData?.phoneNumber || '',
+        website: barData?.website || '',
       };
       setBar(sanitizedBarData);
       setEditedBar(sanitizedBarData);
@@ -55,6 +66,15 @@ export default function BarPage({ params }: PageProps) {
   const handleSave = async () => {
     if (!editedBar) return;
     try {
+      let heroImageURL = editedBar.heroImageURL;
+
+      // Upload hero image if one is selected
+      if (selectedHeroImage) {
+        const imageRef = ref(storage, `images/${id}`);
+        await uploadBytes(imageRef, selectedHeroImage);
+        heroImageURL = await getDownloadURL(imageRef);
+      }
+
       // Upload PDF if one is selected
       if (selectedFile) {
         for (const happyHour of editedBar.happyHours) {
@@ -69,7 +89,7 @@ export default function BarPage({ params }: PageProps) {
       const barRef = doc(db, 'bars', id);
       const updates = {
         name: editedBar.name,
-        heroImageURL: editedBar.heroImageURL,
+        heroImageURL,
         'address.fullAddress': editedBar.fullAddress,
         'address.neighborhood': editedBar.address.neighborhood,
         'address.city': editedBar.address.city,
@@ -82,6 +102,7 @@ export default function BarPage({ params }: PageProps) {
       setBar(editedBar);
       setIsEditing(false);
       setSelectedFile(null);
+      setSelectedHeroImage(null);
     } catch (error) {
       console.error('Error saving bar:', error);
     }
@@ -235,7 +256,8 @@ export default function BarPage({ params }: PageProps) {
         bar={bar} 
         editedBar={editedBar} 
         isEditing={isEditing} 
-        setEditedBar={setEditedBar} 
+        setEditedBar={setEditedBar}
+        onImageSelect={setSelectedHeroImage}
       />
 
       <div className="max-w-7xl mx-auto px-8 py-12 space-y-8">
@@ -275,15 +297,13 @@ export default function BarPage({ params }: PageProps) {
             setEditedBar={setEditedBar} 
           />
 
-          {bar.happyHours && bar.happyHours.length > 0 && (
-            <HappyHoursSection 
-              bar={bar} 
-              editedBar={editedBar} 
-              isEditing={isEditing} 
-              setEditedBar={setEditedBar}
-              handleFileUpload={handleFileUpload}
-            />
-          )}
+          <HappyHoursSection 
+            bar={bar} 
+            editedBar={editedBar} 
+            isEditing={isEditing} 
+            setEditedBar={setEditedBar}
+            handleFileUpload={handleFileUpload}
+          />
         </div>
       </div>
 

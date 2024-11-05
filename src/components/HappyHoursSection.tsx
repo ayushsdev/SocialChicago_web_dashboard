@@ -3,11 +3,11 @@ import { Clock } from 'lucide-react';
 import { WeekDay } from '@/lib/bar';
 import { Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
-import crypto from 'crypto';
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 interface HappyHoursSectionProps {
   bar: Bar;
@@ -27,6 +27,11 @@ export function HappyHoursSection({ bar, editedBar, isEditing, setEditedBar, han
   const [pdfUrls, setPdfUrls] = useState<{ [key: string]: string }>({});
   const [loadingPdfs, setLoadingPdfs] = useState<{ [key: string]: boolean }>({});
   const [analyzingPdfs, setAnalyzingPdfs] = useState<{ [key: string]: boolean }>({});
+
+  // Ensure happyHours is always an array
+  if (!displayBar.happyHours) {
+    displayBar.happyHours = [];
+  }
 
   const handleHappyHourChange = (index: number, field: keyof HappyHour) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -76,7 +81,7 @@ export function HappyHoursSection({ bar, editedBar, isEditing, setEditedBar, han
     const newHappyHours = [
       ...(displayBar.happyHours || []),
       { 
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: '',
         day: [] as WeekDay[],
         drinks: [],

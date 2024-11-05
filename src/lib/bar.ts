@@ -28,17 +28,30 @@ export interface HappyHour {
 }
 
 export interface Bar {
+  id?: string;
+  name: string;
+  heroImageURL: string | null;
+  address: {
+    neighborhood: string;
+    city: string;
+    state: string;
+  };
+  phoneNumber: string;
+  fullAddress: string;
+  website: string;
+  happyHours: Array<{
     id: string;
     name: string;
-    heroImageURL: string;
-    address: {
-      neighborhood: string;
-      city: string;
-      state: string;
-    };
-    fullAddress: string;
-    happyHours: HappyHour[];
-    phoneNumber: string;
-    website: string;
-  }
+    day: WeekDay[];
+    startTime: Timestamp | null;
+    endTime: Timestamp | null;
+    drinks: string[];
+    deals: Array<{
+      item: string;
+      description: string;
+      deal: string;
+    }>;
+    deals_summary: string;
+  }>;
+}
   

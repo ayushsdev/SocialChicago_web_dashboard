@@ -62,14 +62,16 @@ export default function Dashboard({ user, signOut }: DashboardProps) {
             {bars.map((bar) => (
               <div key={bar.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                  <Link href={`/bars/${bar.id}`} className="block">
-                 <Image 
-                    src={bar.heroImageURL} 
-                    alt={bar.name}
-                    width={400}
-                    height={192}
-                    className="w-full h-48 object-cover"
-                    onError={() => console.error('Image failed to load:', bar.heroImageURL)}
-                  />
+                 {bar.heroImageURL && (
+                   <Image 
+                      src={bar.heroImageURL} 
+                      alt={bar.name}
+                      width={400}
+                      height={192}
+                      className="w-full h-48 object-cover"
+                      onError={() => console.error('Image failed to load:', bar.heroImageURL)}
+                   />
+                 )}
                 </Link>
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-black mb-2">{bar.name}</h2>
